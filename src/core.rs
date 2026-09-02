@@ -186,15 +186,26 @@ fn main() -> Result<()> {
                 let mut pixels = vec![0u8; row_bytes * height_video as usize];
 
                 for y in 0..height_video as usize {
-                    let src_row = if stride >= 0 {
+                    let src_row_start: *const u8 = if stride >= 0 {
                         data.add(y * stride_abs)
                     } else {
                         data.add((height_video as usize - 1 - y) * stride_abs)
                     };
 
-                    let dst_row = pixels.as_mut_ptr().add(y * row_bytes);
+                    let dst_row_start: *mut u8 = pixels.as_mut_ptr().add(y * row_bytes);
 
-                    std::ptr::copy_nonoverlapping(src_row, dst_row, row_bytes);
+                    for x in 0..width_video as usize {
+                        let src_byte_ptr = src_row_start.add(x * 4);
+                        let dst_byte_ptr = dst_row_start.add(x * 4);
+
+                        *dst_byte_ptr.add(0) = *src_byte_ptr.add(2);
+
+                        *dst_byte_ptr.add(1) = *src_byte_ptr.add(1);
+
+                        *dst_byte_ptr.add(2) = *src_byte_ptr.add(0);
+                        
+                        *dst_byte_ptr.add(3) = *src_byte_ptr.add(3);
+                    }
                 }
 
                 buffer.Unlock()?;
