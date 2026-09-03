@@ -1,5 +1,0 @@
-width: 1920
-heigth: 1080
-latency: 23
-filename: video.mp4
-vsync: 0
