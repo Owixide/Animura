@@ -92,6 +92,8 @@ fn main() -> Result<()> {
 
         let _ = ShowWindow(aniwin, SW_SHOWDEFAULT);
 
+        
+
         MFStartup(MF_VERSION, MFSTARTUP_FULL)?;
 
         let mut attributes: Option<IMFAttributes> = None;
@@ -174,45 +176,21 @@ fn main() -> Result<()> {
 
                 let buffer = sample.ConvertToContiguousBuffer()?;
 
-                let mut data: *mut u8 = std::ptr::null_mut();
+                let mut data = std::ptr::null_mut();
                 let mut max_len = 0u32;
                 let mut cur_len = 0u32;
 
                 buffer.Lock(&mut data, Some(&mut max_len), Some(&mut cur_len))?;
 
-                let row_bytes = (width_video * 4) as usize;
-                let stride_abs = stride.unsigned_abs() as usize;
-
-                let mut pixels = vec![0u8; row_bytes * height_video as usize];
-
-                for y in 0..height_video as usize {
-                    let src_row_start: *const u8 = if stride >= 0 {
-                        data.add(y * stride_abs)
-                    } else {
-                        data.add((height_video as usize - 1 - y) * stride_abs)
-                    };
-
-                    let dst_row_start: *mut u8 = pixels.as_mut_ptr().add(y * row_bytes);
-
-                    for x in 0..width_video as usize {
-                        let src_byte_ptr = src_row_start.add(x * 4);
-                        let dst_byte_ptr = dst_row_start.add(x * 4);
-
-                        *dst_byte_ptr.add(0) = *src_byte_ptr.add(2);
-
-                        *dst_byte_ptr.add(1) = *src_byte_ptr.add(1);
-
-                        *dst_byte_ptr.add(2) = *src_byte_ptr.add(0);
-                        
-                        *dst_byte_ptr.add(3) = *src_byte_ptr.add(3);
-                    }
-                }
+                renderer.change_texture(data, width_video, height_video, stride)?;
 
                 buffer.Unlock()?;
 
-                renderer.change_texture(&pixels, width_video as u32, height_video as u32)?;
                 renderer.render([0.1, 0.1, 0.3, 1.0], vsync);
-                thread::sleep(Duration::from_millis(latency));
+
+                if latency > 0 {
+                    thread::sleep(Duration::from_millis(latency));
+                }
             }
         }
     }

@@ -17,8 +17,9 @@ use windows::{
             },
             Dxgi::{
                 Common::{
-                    DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_MODE_DESC, DXGI_MODE_SCALING_UNSPECIFIED,
-                    DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED, DXGI_RATIONAL, DXGI_SAMPLE_DESC,
+                    DXGI_FORMAT_B8G8R8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_MODE_DESC,
+                    DXGI_MODE_SCALING_UNSPECIFIED, DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED,
+                    DXGI_RATIONAL, DXGI_SAMPLE_DESC,
                 },
                 DXGI_PRESENT, DXGI_SWAP_CHAIN_DESC, DXGI_SWAP_EFFECT_FLIP_DISCARD,
                 DXGI_USAGE_RENDER_TARGET_OUTPUT, IDXGISwapChain,
@@ -32,7 +33,7 @@ pub struct Renderer {
     render_target_view: ID3D11RenderTargetView,
     swap_chain: IDXGISwapChain,
     context: ID3D11DeviceContext,
-    // device: ID3D11Device,
+    // pub device: ID3D11Device,
     width: u32,
     height: u32,
     vertex: ID3D11VertexShader,
@@ -123,7 +124,7 @@ impl Renderer {
                 Height: heigth_video,
                 MipLevels: 1,
                 ArraySize: 1,
-                Format: DXGI_FORMAT_R8G8B8A8_UNORM,
+                Format: DXGI_FORMAT_B8G8R8A8_UNORM,
                 SampleDesc: DXGI_SAMPLE_DESC {
                     Count: 1,
                     Quality: 0,
@@ -214,11 +215,19 @@ impl Renderer {
 
             self.context.Draw(3, 0);
 
-            let _ = self.swap_chain.Present(vsync, DXGI_PRESENT(0));
+            let _ = self
+                .swap_chain
+                .Present(if vsync > 0 { vsync } else { 0 }, DXGI_PRESENT(0));
         }
     }
 
-    pub fn change_texture(&self, data: &[u8], width: u32, height: u32) -> Result<()> {
+    pub fn change_texture(
+        &self,
+        data: *mut u8,
+        width: u32,
+        height: u32,
+        stride: i32,
+    ) -> Result<()> {
         unsafe {
             let mut mapped_img = D3D11_MAPPED_SUBRESOURCE::default();
 
@@ -230,13 +239,20 @@ impl Renderer {
                 Some(&mut mapped_img),
             )?;
 
-            let src = data.as_ptr();
+            let src = data;
             let dst = mapped_img.pData as *mut u8;
             let bytes_in_one_row = width * 4;
             let pitch = mapped_img.RowPitch as usize;
 
             for num_str in 0..height {
-                let src_row = src.add((num_str * bytes_in_one_row) as usize);
+                let stride_abs = stride.unsigned_abs() as usize;
+
+                let src_row = if stride >= 0 {
+                    src.add(num_str as usize * stride_abs)
+                } else {
+                    src.add((height - 1 - num_str) as usize * stride_abs)
+                };
+
                 let dst_row = dst.add((num_str as usize * pitch) as usize);
 
                 std::ptr::copy_nonoverlapping(src_row, dst_row, bytes_in_one_row as usize);
