@@ -1,4 +1,4 @@
-# **RU**
+# **RU | Русский**
 
 # Animura
 
@@ -114,3 +114,122 @@
 ### Прямое общение: https://t.me/Mr_Zefy.
 
 ## Прошу, не забудьте прочесть лицензионный документ.
+
+---
+
+# **EN | English**
+
+# Animura
+
+**Animura** is a free application for setting animated wallpapers on **Windows 10 x64**, with future support for **Windows 11 x64**.
+
+## System Requirements
+
+- **OS:** Windows 10 x64
+- **RAM:** 4 GB
+- **Screen Resolution:** 1920×1080
+
+## Steps to Ensure a Correct Launch:
+
+1. Save the `Animura.exe` file of your required version.
+2. Run it once. A `bin` folder will be created in the same directory. This is standard behavior, do not worry.
+
+> **Important**: The `bin` folder will be recreated if it is missing or incomplete. If you move the `Animura.exe` executable, it is highly recommended to move the `bin` folder to the new location of `Animura.exe` as well, unless you want to reconfigure the **config** from scratch.
+
+3. You need to move your specific media file into the directory containing `Animura.exe`. 
+
+4. Navigate to the `bin` folder, then into the `settings` folder. Inside `settings`, you will find `config.txt`, which you need to open with any text editor.
+5. Set the value of the `filename` parameter to the name of your media file (or provide an absolute path if the media is located outside the `Animura.exe` directory for any reason).
+
+> **Example**: By default, the line is set to `filename: video.mp4`. Change `video.mp4` to your desired media file, or provide an absolute path.
+> **Examples**: 
+> - Using the `media filename`: `filename: Clip.mp4` if your media is located **in the same** directory as the executable file.
+> - Using the `absolute path to media`: `filename: C:\MyLiveClips\Clip.mp4` if your media is located **in a different** directory than the executable file.
+If you prefer not to edit the configuration files manually, you can do the following:
+
+6. You must save `config.txt` after making any changes.
+
+> Please note: if the `bin` folder (or `config.txt`) is deleted or lost, you will have to reconfigure it from scratch.
+> You need to edit `config.txt` every time you want to change the live wallpaper, playback speed, or CPU/GPU load. 
+
+## Configuration Fields in `config.txt`
+
+> ### `width`
+
+`width` — screen width.
+
+Set this parameter to your screen width in pixels.
+
+If an incorrect value is specified, the image may be rendered in a quality or resolution you did not expect. We strongly advise against modifying this parameter. It is only useful if you change your monitor's resolution.
+
+> ### `height`
+
+`height` — screen height.
+
+Set this parameter to your screen height in pixels.
+
+If an incorrect value is specified, the image may be rendered in a quality or resolution you did not expect. We strongly advise against modifying this parameter. It is only useful if you change your monitor's resolution.
+
+> ### `latency`
+
+`latency` — inter-frame delay.
+
+This parameter affects the frame transition speed.
+
+- If you increase the value, the video will play slower, the frame rate will drop, and the system load will decrease.
+- If you decrease the value, the video will play faster, the frame rate will increase, and the system load will rise.
+- If you set this parameter to `0`, the program will exert maximum load on your GPU, as there will be no frame rate limitations.
+
+If the video seems too fast or too slow, adjust the `latency` parameter.
+
+Important: If `latency` is greater than zero, the `vsync` parameter must be set to `0`.
+
+> ### `filename`
+
+`filename` — path to the media.
+
+This parameter tells the program which media file to use.
+
+If the media is not found at the specified path, is corrupted, or has an unsupported format, the program will crash with an error. For peace of mind, it is highly recommended to place your media in the same directory as the `Animura.exe` executable; this will prevent a multitude of errors.
+
+> ### `vsync`
+
+`vsync` — VSYNC operational parameters.
+
+This parameter limits the frame rate relative to the monitor's refresh rate. Possible values range from `0` to `4`.
+
+- `0` — no frame rate limitation via VSYNC.
+- `1` — the frame rate will aim to match the monitor's refresh rate.
+- `2` — the frame rate will aim to match 1/2 of the monitor's refresh rate.
+- `3` — the frame rate will aim to match 1/3 of the monitor's refresh rate.
+- `4` — the frame rate will aim to match 1/4 of the monitor's refresh rate.
+
+The higher the value, the fewer frames per second you will get. Consequently, the lower the load on the machine.
+
+Important: If `vsync` is greater than zero, the `latency` parameter must be set to `0`.
+
+## System Load and Comfort
+
+The program is designed to operate with the minimum possible load on the GPU, but the actual load depends on your video file, screen resolution, system performance, and configuration settings.
+
+If **Animura** heavily loads your machine:
+
+- Increase the `latency`.
+- Set `vsync` to `2`, `3`, or `4`.
+- Use a video with a lower resolution.
+
+Important: As a reminder, if `vsync` is greater than zero, the `latency` parameter must be `0`. Conversely, if `latency` is greater than zero, the `vsync` parameter must be `0`.
+
+## Program Termination
+
+Currently, the program lacks a built-in feature to terminate itself automatically. To stop the execution, simply end the task via the Task Manager. 
+
+## Feedback
+
+### This project is created and maintained by a single developer. I would greatly appreciate knowing that people are using my application, and your feedback is highly valuable to me. 
+
+### You can support me by subscribing to my Telegram channel: https://t.me/KernelaStudio.
+
+### Direct contact: https://t.me/Mr_Zefy.
+
+## Please ensure you read the license agreement.
