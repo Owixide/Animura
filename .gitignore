@@ -2,4 +2,4 @@
 Cargo.lock
 .cargo
 video.mp4
-bin
+/bin
